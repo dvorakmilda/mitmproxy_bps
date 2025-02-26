@@ -5,8 +5,21 @@
             "password": ""
         }
     },
+    "pages": [
+        "http://192.168.222.104/vytapeni/panel.htm",
+        "http://192.168.222.104/odsireni/panel.htm",
+        "http://192.168.222.104/michanikrmeni/panel.htm",
+        "http://192.168.222.104/analyzator/panel.htm"
+      ],
     "mappings": {
         "/schema/panel.htm": { "offset_x": 100, "offset_y": 25 },
-        "/elektromery/panel.htm?pars=[object Object]&opts=target:main;": { "offset_x": 100, "offset_y": 25 }
+        "/elektromery/panel.htm": { "offset_x": 100, "offset_y": 25 },
+        "/vytapeni/panel.htm": { "offset_x": 100, "offset_y": 25 },
+        "/michanikrmeni/panel.htm": { "offset_x": 100, "offset_y": 25 },
+        "/cerpani/panel.htm": { "offset_x": 100, "offset_y": 25 },
+        "/vykon_kgj_naplneni/panel.htm": { "offset_x": 100, "offset_y": 25 },
+        "/analyzator/panel.htm": { "offset_x": 100, "offset_y": 25 },
+        "/odsireni/panel.htm": { "offset_x": 100, "offset_y": 25 }
+
     }
 }

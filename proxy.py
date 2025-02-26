@@ -26,27 +26,75 @@ def request(flow: http.HTTPFlow):
             print(f"🔒 Přidán Authorization header pro {decoded_url}")
 
 def response(flow: http.HTTPFlow):
-    """ Modifikuje odpověď a přidává CSS pro posunutí """
+    """ Modifikuje odpověď a přidává CSS pro posunutí nebo čtyři stránky vedle sebe """
     url_path = flow.request.path
     decoded_url = urllib.parse.unquote(url_path)
 
-    mappings = config.get("mappings", {})
+    # Pokud URL je požadovaná stránka pro zobrazení čtyř stran
+    if decoded_url == "/four-pages":
+        # Definuj čtyři iframe stránky z konfigurace
+        pages = config.get("pages", [])
 
-    if decoded_url in mappings:
-        offsets = mappings[decoded_url]
-        offset_x = offsets.get("offset_x", 0)
-        offset_y = offsets.get("offset_y", 0)
+        # Generování HTML pro čtyři stránky v požadovaném rozložení
+        iframe_html = ""
+        for i, page in enumerate(pages[:4]):  # Omezíme to na 4 stránky
+            # První a třetí iframe v horní polovině obrazovky
+            if i == 0 or i == 2:
+                iframe_html += f'<iframe src="{page}" style="width: 50vw; height: 50vh; border: none; float: left;"></iframe>'
+            # Druhá a čtvrtá iframe ve spodní polovině obrazovky
+            else:
+                iframe_html += f'<iframe src="{page}" style="width: 50vw; height: 50vh; border: none; float: left;"></iframe>'
 
-        if "text/html" in flow.response.headers.get("content-type", ""):
-            html = flow.response.text
-            css = f"<style>body {{ transform: translate({offset_x}px, {offset_y}px); }}</style>"
-            html = html.replace("</head>", css + "</head>")
-            flow.response.text = html
-            print(f"✏️ Modifikován obsah pro {decoded_url}: Posun {offset_x}px, {offset_y}px")
+        # Vytvoření základní HTML struktury
+        html_content = f"""
+        <html>
+            <head>
+                <title>Čtyři stránky</title>
+                <style>
+                    body {{ margin: 0; padding: 0; overflow: hidden; }}
+                    iframe {{
+                        margin: 0;
+                        padding: 0;
+                    }}
+                    .container {{
+                        display: flex;
+                        flex-wrap: wrap;
+                        height: 100vh;
+                        width: 100vw;
+                    }}
+                    iframe {{
+                        display: block;
+                        border: none;
+                    }}
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    {iframe_html}
+                </div>
+            </body>
+        </html>
+        """
+
+        # Nastavení odpovědi s vytvořeným HTML
+        flow.response.headers["Content-Type"] = "text/html; charset=utf-8"
+        flow.response.text = html_content
+        print(f"✏️ Vygenerována stránka pro {decoded_url} se čtyřmi iframy")
+    else:
+        # Pokračuj v úpravy odpovědi pro CSS a posuny
+        mappings = config.get("mappings", {})
+        if decoded_url in mappings:
+            offsets = mappings[decoded_url]
+            offset_x = offsets.get("offset_x", 0)
+            offset_y = offsets.get("offset_y", 0)
+
+            if "text/html" in flow.response.headers.get("content-type", ""):
+                html = flow.response.text
+                css = f"<style>body {{ transform: translate({offset_x}px, {offset_y}px); }}</style>"
+                html = html.replace("</head>", css + "</head>")
+                flow.response.text = html
+                print(f"✏️ Modifikován obsah pro {decoded_url}: Posun {offset_x}px, {offset_y}px")
 
 # Spuštění přes mitmdump:
 # mitmdump -s proxy.py --mode reverse:http://192.168.222.104
-
 # proxy je dostupný na adrese stroje kde se spouští na portu :8080
-
-
