@@ -1,0 +1,12 @@
+{
+    "auth": {
+        "/elektromery/panel.htm": {
+            "username": "Nepřihlášen",
+            "password": ""
+        }
+    },
+    "mappings": {
+        "/schema/panel.htm": { "offset_x": 100, "offset_y": 25 },
+        "/elektromery/panel.htm?pars=[object Object]&opts=target:main;": { "offset_x": 100, "offset_y": 25 }
+    }
+}

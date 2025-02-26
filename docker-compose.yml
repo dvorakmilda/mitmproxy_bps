@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  mitmdump:
+    image: mitmproxy/mitmproxy:latest
+    container_name: mitmdump
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./proxy.py:/usr/local/lib/python3.8/site-packages/mitmproxy/proxy.py
+      - ./config.json:/etc/mitmproxy/config.json
+    command: mitmdump -s /usr/local/lib/python3.8/site-packages/mitmproxy/proxy.py --mode reverse:http://192.168.222.104
+    environment:
+      - PYTHONUNBUFFERED=1
